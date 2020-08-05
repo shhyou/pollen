@@ -6,7 +6,12 @@
   (syntax-case stx ()
     [(_ . ID)
      (setup:allow-unbound-ids?)
-     #'(#%app make-default-tag-function 'ID)]
+     (let ([unbound-id-handler (setup:allow-unbound-ids?)])
+       (cond
+         [(procedure? unbound-id-handler)
+          (unbound-id-handler #'ID)]
+         [else
+          #'(#%app make-default-tag-function 'ID)]))]
     [(_ . ID)
      #'(def/c ID)]))
 
